@@ -1,0 +1,666 @@
+<!-- 
+VCS(version control system): hệ thống quản lý phiên bản, lưu trữ các thay đổi của 1 hoặc nhiều tập tin theo các mốc thời gian. Xem lại các thay đổi đã thực hiện theo thời gian, khôi phục phiên bản cũ của các tập tin.
+-->
+
+<!-- 
+FIRST COMMITS             (file an)
+// git init  : tạo ra folder .git, lưu các thông tin lịch sử // câu lệnh đầu với project mới(FULLSTACK)
+   Trong project thường có file README.md nhằm cho mọi người biết project này có tác dụng gì
+   WORKING DIRECTOTY: thư mục làm việc
+// git status: check trạng thái các file
+// git add, git add(liet ke) . -> màu xanh, lưu vào STAGING AREA
+// git commit -m 'name': đóng gói những thay đổi vào hộp, dán 1 cái tem -> lưu thay đổi vào GIT REPOSITORY  -> git status: nothing to commit, working tree clean
+-->
+
+<!-- 
+// git log: xem lịch sử commit(cái cũ sẽ ở dưới)
+// git show id: coi chi tiết, thoát (:q).(Ctrl c)
+// git diff(different): xem nội dung của file modified(khác với untrack file - file mới), thường sử dụng sau khi git status.
+// gitk(GUI).
+-->
+
+<!--
+// git checkout -- file: discard changes in working directory(file màu đỏ: modify chu kp untrack file) -> file quay lai ban dau(chua len staging) (khoi phuc lai fil chinh sua)
+// git reset HEAD file: xanh -> đỏ,(unstage - còn reset là đưa file từ trạng thái staging về working dir(kiểu như hủy bỏ việc mình vừa add file đó))
+-->
+
+<!-- 
+BRANCHING & MERGING(git checkout -b <branch> trước rồi modify)
+// git branch: kiểm tra xem mình đang ở branch nào
+ *master
+// git checkout -b <branch> (branching): tạo ra 1 nhánh mới(mặc định là master), rất hay sử dụng để tạo 1 class mới, function mới,.... 
+ Ex: git checkout -b feature/dog-class -> 2 branch đều trỏ đên 1 commit cuối cùng
+   Ex: * feature/dog-class
+         master
+// git checkout <branch>: switch to this <branch>. 
+  -> chỉ có file ở branch này, không có file ở branch khác, muốn bỏ code thì quay lại master thôi
+// git merge: sau khi thấy các nhánh đã oke rồi thì merge vào nhánh master
+ A <---- B
+ git checkout A(master?)  git merge B (master <------ feature/dog-class) xong roi xoa
+// git branch -D feature/dog-class: xóa nhánh
+-->
+
+<!-- Tất cả file đã được lên git repository
+// git reset --soft HEAD^ chuyển file từ REPOSITORY -> STAGING AREA (màu xanh)
+// git reset --mixed HEAD^ chuyển file từ REPOSITORY -> WORKING DIRECTORY (màu đỏ)
+// git reset --hard HEAD^ xóa hẳn commt 
+-->
+
+<!-- 
+// git revert id(bất kì) -> Tạo ra bản trước của file , :wq -> tạo 1 1 bản revert ở trên (dấu + -> -)
+-->
+
+<!--  
+.gitignore: file này bỏ qua  1 số file mà không muốn commit(tức là chưa được commit bao giờ node_modules,...), giới thiệu module chalk, gitignore node_modules thôi(ko can gui kem node_modules, chi gui packagejson thoi), còn lại add bt , thong thuong k muon commit node_modules ma commit packagejson ->npm install
+file: .gitignore: node_modules
+                  ...
+-->
+
+<!--  GITHUB, BITBUCKET, GITLAB, git credential   
+        pull  <---------------                                            pull ---------------->   push  ---------------->      GITHUB  (remote repository)    push  <----------------   
+        local repository                                                   local repository        
+
+Lúc đầu tạo repository trên GITHUB
+  git remote add origin http://
+  git remote -v, biết được repository hiện tại của mình trên github
+  git push -u origin master // lần sau chỉ cần git push (origin/master)
+
+  //1 người làm vs 1 người
+  git push
+  git clone http // -> folder có mọi thứ như người up(git log, ...)
+  git pull // cập nhật lại giá trị, thay đổi khi push lên github
+-->
+
+<!-- 
+PULL REQUEST - làm việc trong nhóm
+  1. git checkout -b <feature_branch> (roi moi tao feature)
+  2. git push origin <branch> // nhớ làm trong local -> remote như nhau
+  3. create a pull request on Github ...
+  4. review code
+    4.1 review code online:
+     An vào new pull request(chỗ cái mình vừa push branch->đặt tên) thấy oke rồi -> merge pull request (review code online, thấy chưa được -> local sửa lại -> git push origin branch -> merge pull request) -> delete branch(cả local và remote) -> git pull về vì có những thứ trên github chưa đồng bộ với local
+    4.2  fetch branch into local to test offline (optional)
+      Máy A push lên, máy B muốn pull về để chạy thử code 
+      - Máy A: git checkout master -> git pull(đồng bộ), rồi chạy local, push nhánh lên github -> pull request
+      - Máy b: git remote -v: xem thử đúng repository chưa?
+       -> git fetch origin <branch>(feature/dog-class) -> branch về đến local   
+       -> git checkout feature/dog-class, npm install nó sẽ cài hết package còn thiếu trong package.json vì máy b k có nhưng máy a có
+       -> vim file đê check trên command line
+       -> check x -> oke thì answer pull request -> bên A merge pull request -> delete branch -> git pull về vì có những thứ trên github chưa đồng bộ với local
+    4.3 approve the pull request
+  5. merge to master  
+-->
+
+<!-- 
+RESOLVE CONFLICT (xung đột giữa các commit)
+when will conflicts happen?
+  1. Changing the same file + same line , cùng thay đổi 1 file  (master -> 2 branch khác nhau)
+  2. A deleted file X, B modified file X
+
+Method 2: https://www.atlassian.com/git/tutorials/merging-vs-rebasing
+  1. Merge updated master to feature branch (3-way merge)
+  2. Resolve conflict
+  3. Commit and push 
+
+  git checkout master -> git pull -> git checkout <branch> -> git merge master -> xóa mấy cái gạch gạch trên hình -> git status -> git add -> git commit ... -> git push origin feature/mouse-run
+-->
+
+<!--
+Contribute to a open-sourced project
+Issue tracking
+Markdown(.MD): markdown online editor, markdown cheatsheet
+Trending on github
+Oh my zsh, my zsh(linux)
+GUI tools : GOOGLE Git GUI clients: SourceTree, Git kraken, Github Desktop
+Learn more about git: atlassian, rogerdudler
+Learn vim/nano(Text/code editor)
+-->
+
+<!-- 
+var phoneNumber = '123-123-1234';
+phoneNumber.replace("/-g/g");
+
+var phoneNumber = /^0[0-9]{9}$/;
+phoneNumber.test('0701899123');  //false or true
+
+'123-123-1234'.match(/\d+/g);
+
+
+
+// REGULAR EXPRESSION(RegEx)
+//   - Biểu thức chính quy: tìm các chuỗi theo 1 dạng nào đó. Ex: /([A-Z])\w+/g
+//   - Character classes:(bắt đầu từ trái sang phải)
+//       [abc]: any of a, b or c   <==> [^abc]
+//       [a-g], [0-9a-z]: character between a and g 
+//       . : any character except newline
+//       \w, \d, \s: word, digit, whitespace  <==> \W, \D, \S
+//   - Anchors(ký tự đặc biệt):
+//       ^abc$: start/end of string (1 câu)
+//       \b, \B: word, not word boundary  0905 <==> 09056
+//   - Escaped characters: \., \*, \\ (+?[]{}()//)
+//   - Groups: (abc)
+//   - Quatifiers: a*, a+, a?: 0 or more, 1 or more, 0 or 1
+//                 a{5}, a{2,}, a{1, 3}
+
+-->
+
+//DEMOWEBDEVELOPER
+<!-- 
+REQUEST & RESPONSE
+
+        REQUEST(include: head, body) 
+       ---------------------------------------------  >
+CLIENT                                                   SERVER (are most often computers in the cloud)
+
+      <  -------------------------------------------- 
+        RESPONSE(include: head, body)
+        
+- The HTTP request - response circle
+  + A client (a browser) sends an HTTP request to the web
+  + An web server receives the request
+  + The server runs an application to process the request
+  + The server returns an HTTP response (output) to the browser
+  + The client (the browser) receives the response
+ 
+- A typical HTTP request / response circle:
+  + The browser requests an HTML page. The server returns an HTML file.
+  + The browser requests a style sheet. The server returns a CSS file.
+  + The browser requests an JPG image. The server returns a JPG file.
+  + The browser requests JavaScript code. The server returns a JS file
+  + The browser requests data. The server returns data (in XML or JSON).
+-->
+
+<!-- 
+REQUEST METHOD
+ - Four main methods: 
+   + GET: take data from server
+   + POST: submit data onto server
+   + PUT: override(total) or create one new resource
+   + PATCH: update one element of resource
+   + DELETE: request server delete data
+-->
+
+<!-- 
+HTTP
+ - The Hypertext Transfer Protocol (HTTP) is designed to enable communications between clients and servers.
+ - HTTP works as a request-response protocol between a client and server.
+ - Communication between client computers and web servers is done by sending HTTP Requests and receiving HTTP ResponsesA web browser may be the client, and an application on a computer that hosts a web site may be the server.
+ Example: A client (browser) submits an HTTP request to the server; then the server returns a response to the client. The response contains status information about the request and may also contain the requested content.
+
+- XHR - XML Http Request
+  + All browsers have a built-in XMLHttpRequest Object (XHR).
+  + XHR is a JavaScript object that is used to transfer data between a web browser and a web server.
+  + XHR is often used to request and recieve data for the purpose of modifying a web page.
+  + Despite the XML and Http in the name, XHR is used with other protocols than HTTP, and the data can be of many different types like HTML, CSS, XML, JSON, and plain text.
+  +The XHR Object is a Web Developers Dream, because you can:
+       Update a web page without reloading the page
+       Request data from a server - after the page has loaded
+       Receive data from a server - after the page has loaded
+       Send data to a server - in the background
+       The XHR Object is the underlying concept of AJAX and JSON:
+-->
+
+<!-- 
+RESPONSIVE WEB DESIGN
+ - Responsive Web Design is about using HTML and CSS to automatically resize a website.
+ - Responsive Web Design is about making a website look good on all devices (desktops, tablets, and phones):
+-->
+
+<!-- 
+HTML DOM
+  The HTML DOM is an API (Programming Interface) for JavaScript:
+   + JavaScript can add/change/remove HTML elements
+   + JavaScript can add/change/remove HTML attributes
+   + JavaScript can add/change/remove CSS styles
+   + JavaScript can react to HTML events
+   + JavaScript can add/change/remove HTML events
+-->
+
+
+<!-- 
+XML
+ - XML stands for eXtensible Markup Language
+ - XML plays an important role in many different IT systems
+ - XML is often used for distributing data over the Internet
+ - It is important for all web developers to have a good understanding of XML
+-->
+
+<!-- 
+AJAX
+ - AJAX = Asynchronous JavaScript And XML.
+ - AJAX is not a programming language.
+ - AJAX is a developer's dream, because you can:
+   + Read data from a web server - after a web page has loaded
+   + Update a web page without reloading the page
+   + Send data to a web server - in the background
+ - AJAX just uses a combination of:
+   + A browser built-in XMLHttpRequest object (to request data from a web server)
+   + JavaScript and HTML DOM (to display or use the data)
+ - How AJAX Works
+   + An event occurs in a web page (the page is loaded, a button is clicked)
+   + An XMLHttpRequest object is created by JavaScript
+   + The XMLHttpRequest object sends a request to a web server
+   + The server processes the request
+   + The server sends a response back to the web page
+   + The response is read by JavaScript
+   + Proper action (like page update) is performed by JavaScript
+-->
+
+<!-- 
+JSON
+ - JSON stands for JavaScript Object Notation
+ - JSON is a lightweight format for storing and transporting data
+ - JSON is often used when data is sent from a server to a web page
+ - JSON is "self-describing" and easy to understand
+-->
+
+<!-- 
+JQUERY
+ - jQuery is a JavaScript library.
+ - jQuery greatly simplifies JavaScript programming.
+ - jQuery is easy to learn.
+-->
+
+<!--  
+ANGULARJS
+ - AngularJS lets you extend HTML with HTML attributes called directives
+ - AngularJS directives offers functionality to HTML applications
+ - AngularJS provides built-in directives and user defined directives
+-->
+
+<!-- 
+REACT
+ - React is a JavaScript library created by Facebook
+ - React is a User Interface (UI) library
+ - React is a tool for building UI components
+-->
+
+<!--  
+VUE.JS
+ - Vue.js lets you extend HTML with HTML attributes called directives
+ - Vue.js directives offers functionality to HTML applications
+ - Vue.js provides built-in directives and user defined directives
+-->
+
+<!-- 
+CLOUD (CLOUD COMPUTING - điện toán đám mây - There is no cloud, it's just someone else's computer)
+ - Cloud computing <==> On-premises(Tự mua phần cứng, tự lắp mạng, mua IP tĩnh, gắn domain, cài hệ điều hành, cài runtime (Java, PHP, MySQL), deploy ứng dụng,…  để mọi người có thể dùng ứng dụng của mình)
+ - Ba nhà cung cấp dịch vụ Cloud (Gọi tắt là Cloud Provider) phổ biến nhất là 
+     + AWS – Amazon Web Service của Amazon
+     + Azure - microsoft
+     + GCP – Google Cloud Platform của Google
+ - Các dịch vụ mà Cloud cung cấp. Đây là những dịch vụ chúng ta cần dùng để có thể vận hành một ứng dụng web hoàn chỉnh:
+    + Virtual Machine (VM): Cung cấp máy ảo như VPS để chúng ta có thể vào đó cài và chạy ứng dụng. (Amazon EC2, Azure VM, Google Compute Engine)
+    + Storage: Cung cấp nơi để lưu trữ file tĩnh (ảnh, nhạc, video, text) để ứng dụng hoặc người dùng có thể upload/download về. (Amazon S3, Azure Blog Storage, Google Cloud Storage)
+    + Database: Cung cấp database (SQL hoặc NoSQL) có là xài luôn, không cần cài hay update gì (Amazon có DynamoDB, RDS; Azure có Azure SQL Database, CosmosDB; Google có Google Cloud SQL, Google Cloud Datastore) 
+    + PaaS: Cung cấp nền tảng PaaS để ta deploy ứng dụng từ code lên là chạy luôn (Amazon có Elastic BeanStack, Azure có Azure App Service, Google có App Engine)
+    + Serverless: Dịch vụ giúp ta chạy code mà không cần quan tâm đến hạ tầng hay server (Amazon có Lambda, Azure có Azure Function, Google có Google Cloud Function)
+  - Cloud có 3 dạng chính:  IAAS, PAAS, SAAS
+    + Infrastructure as a Service: Công ty khác sẽ cho bạn thuê cơ sở hạ tầng (infrastucture) bao gồm server, ổ cứng, mạng. Bạn muốn cài gì cũng được, bỏ code gì lên cũng được.(Azure sẽ tạo cho bạn một con server ảo (VPS), có sẵn Windows/Linux, có sẵn mạng và IP.  Bạn chỉ việc ssh/remote desktop vào server đó, cài PHP/C#/NodeJS, deploy ứng dụng là xong.)
+    + Platform as a Service: Nhà cung cấp sẽ lo cho bạn từ OS (Windows hoặc  Linux) cho tới Runtime (Docker, NodeJS, C#, Java), chỉ cần bỏ code vào mà chạy là được.(Azure/AWS/cty hosting đã tạo sẵn cho bạn một môi trường có sẵn PHP/C#/NodeJS. Bạn chỉ cần upload code lần đó là sản phẩm đã chạy được.) 
+    + Software as a Service: Phần mềm được cung cấp dưới dạng dịch vụ, người sử dụng sẽ trả tiền thuê hàng tháng như Gmail, Dropbox, Salesforce …(Bạn sử dụng Application do một bên cung cấp, không cần cài đặt server gì. Khi có vấn đề cứ hú bên đó sửa!)
+  - KHÁI NIỆM      	NHÀ CUNG CẤP
+      SaaS        	Google Apps, Dropbox, Salesforce, Cisco WebEx, Concur, GoToMeeting
+      PaaS	        AWS Elastic Beanstalk, Windows Azure, Heroku, Force.com, Google App Engine, Apache Stratos, OpenShift
+      IaaS	        DigitalOcean, Linode, Rackspace, Amazon Web Services (AWS), Cisco Metapod, Microsoft Azure, Google Compute                   Engine (GCE)
+  - Phần lớn các công ty đều sử dụng SaaS cho các hoạt động thường ngày (thay vì tự phát triển):
+        Slack để giao tiếp giữa các thành viên
+        Jira để quản lý task
+        Confluence hoặc Google Docs để quản lý document
+        Skype hoặc Zoom.us để họp online
+
+-->
+<!-- 
+Web server" có thể là phần cứng hoặc phần mềm, hoặc cả hai.
+ Ở khía cạnh phần cứng, một web server là một máy tính lưu trữ các file thành phần của một website (ví dụ: các tài liệu HTML, các file ảnh, CSS và các file JavaScript) và có thể phân phát chúng tới thiết bị của người dùng cuối (end-user). Nó kết nối tới mạng Internet và có thể truy cập tới thông qua một tên miền giống như mozilla.org.
+ Ở khía cạnh phần mềm, một web server bao gồm một số phần để điều khiển cách người sử dụng web truy cập tới các file được lưu trữ trên một HTTP server(máy chủ HTTP). Một HTTP server là một phần mềm hiểu được các URL (các địa chỉ web) và HTTP (giao thức trình duyệt của bạn sử dụng để xem các trang web).
+ Ở mức cơ bản nhất, bất cứ khi nào một trình duyệt cần một file được lưu trữ trên một web server, trình duyệt request (yêu cầu) file đó thông qua HTTP. Khi một request tới đúng web server (phần cứng), HTTP server (phần mềm) gửi tài liệu được yêu cầu trở lại, cũng thông qua HTTP.
+
+Để xuất bản một website, bạn cần một static hoặc dynamic web server.
+
+Một static web server, hoặc stack, bao gồm một máy tính (hardware) với một HTTP server (phần mềm). Chúng ta gọi nó là "static" bởi vì server (máy chủ) gửi các file nó lưu trữ "nguyên vẹn" (as-is) tới trình duyệt của bạn.
+
+Một dynamic web server bao gồm một static web server cộng với các phần mềm mở rộng, phổ biến nhất là một application server (máy chủ ứng dụng) và một database. Chúng ta gọi nó là "dynamic" bởi vì application server cập nhật các file được lưu trữ trước khi gửi chúng tới tình duyệt của bạn thông qua HTTP server.
+
+Ví dụ, để tạo ra các trang web mà bạn nhìn thấy trong trình duyệt, application server có thể điền một HTML template với những nội dung lấy từ một database. Các site giống như MDN hay Wikipedia có hàng nghìn trang web, nhưng chúng không phải là các tài liệu HTML thực sự, mà chỉ là vài HTML template và một database khổng lồ. Thiết lập này làm cho nó dễ dàng và nhanh hơn để bảo dưỡng và phân phối nội dụng.
+-->
+<!-- 
+VPS
+VPS (Virual Private Server) là một con server ảo trên mạng, được cung cấp bởi nhà cung cấp dịch vụ hosting (Digital Ocean, Linode, Hostinger…)Nói đơn giản, nó là một con server nằm trên mạng, đã được cài sẵn hệ điều hành (Ubuntu, CentOS). Bạn có thể truy cập vào server với quyền root cao nhất, muốn làm gì cũng được.Hiện nay, khi muốn đưa một trang web lên mạng, ta thường phải đi thuê hosting. Về bản chất, hosting và VPS đều là dùng chung tài nguyên trên một con server khá bự.Tuy nhiên, hosting giống như là phòng tập thể (rẻ hơn), bạn phải ăn uống tắm rửa ở chung phòng với vài chục vài trăm người vậy.Trong khi đó, VPS giống như chung cư (mắc hơn), bạn cũng ở chung, nhưng có phòng riêng, điện nước riêng.Do vậy VPS thoải mái, ít bị gò bó hơn hosting. Các nhà cung cấp hosting thường chỉ cung cấp một con database, một để bạn up code và chạy, dung lượng có hạn. Bạn cũng không thể lựa chọn phiên bản PHP, C#, NodeJS mà hosting đó cung cấp.Với VPS, bạn có nguyên con server nên muốn cài gì thì cài. Bạn có thể cài đặt docker, cài 3, 4 ngôn ngữ lập trình, deploy 3, 4 cái app luôn cũng bay tóc (miễn là VPS chịu tải nổi).
+-->
+
+<!-- 
+SSR(SERVER-SIDE RENDERING) <==> CSR(CLIENT-SIDE RENDERING)
+  - Cơ chế server-side rendering:(Gọi nó là server-side rendering là vì phần lớn logic sẽ được xử lý ở server):
+    + Khi người dùng vào một trang web, trình duyệt sẽ gửi GET request tới web server
+    + Web server sẽ nhận request, đọc dữ liệu từ database.
+    + Web server sẽ render HTML, trả về cho browser để hiển thị cho người dùng
+    Các trang web sử dụng cơ chế này:
+     +Toàn bộ những trang web được build từ CMS như Joomla, WordPress.
+     + Các trang web bán hàng, web tin tức: Thegioididong, Vnexpress, Zing News
+     + Các web đọc truyện và forum: Webtretho, vozforum
+     
+  - Cơ chế client-side rendering( với sự phát triển của JavaScript và AJAX, cơ chế client-side rendering bắt đầu được sử dụng ):
+    + Developer bắt đầu build ứng dụng dưới dạng SPA – Single Page Application. Ứng dụng nằm trong 1 page duy nhất nên được gọi là Single Page Application.
+    Client Side Rendering tức là việc render HTML, CSS sẽ được thực hiện ở client (Tức JavaScript ở trình duyệt)
+    + Page chỉ cần load một lần duy nhất. Khi user chuyển trang hoặc thêm dữ liệu, JavaScript sẽ lấy và gửi dữ liệu từ server qua AJAX. User có thể thấy dữ liệu mới mà không cần chuyển trang.
+    + Chuyển logic sang client nên giảm tải được một phần cho server.
+    + Giảm được băng thông do chỉ cần lấy JSON và dữ liệu cần thiết, thay vì phải lấy toàn bộ trang
+    + Với các ứng dụng cần tương tác nhiều, SPA hoạt động mượt mà hơn vì code chạy trên browser, không cần load đi loại lại nhiều
+    + Facebook (React) Instagram (React) Netflix (React)  Dropbox (React)
+-->
+<!-- 
+CLI
+ - CLI is a command line program that accepts text input to execute operating system functions.
+ - In the 1960s, using only computer terminals, this was the only way to interact with computers.
+ - Today, with graphical user interfaces (GUI), most users never use command-line interfaces (CLI).
+   However, CLI is still used by software developers and system administrators to configure computers, install software, and access features that are not available in the graphical interface.
+
+COMMAND	            DESCRIPTION
+dir	                List the directory (folder) system.
+cd pathname	        Change directory (folder) in the file system.
+cd \	            Move to the root folder of the file system.
+cd ..	            Move one level up (one folder) in the file system.
+copy	            Copy a file to another folder.
+move	            Move a file to another folder.
+type filename	    Type a file.
+mkdir or md	        Creates a new directory (folder).
+rmdir or rd	        Removes a directory (folder).
+cls	Clears the CLI window.
+exit	Closes the CLI window.
+help command	Shows the manual for a given command.
+
+
+
+-->
+
+<!-- 
+GITHUB
+-->
+
+<!-- 
+DEVOPS = DEVELOPMENT + OPERATION
+  + Vừa biết lập trình
+  + Vừa biết ký năng hệ thống
+
+DOCKER là một phần mềm giúp chúng ta thực hiện các thao tác liên quan đến DevOps hay Microservice.
+  - Microservice:
+    + Là một kiểu kiến trúc hướng dịch vụ (SOA - Service-Oriented Architecture)
+    + Các dịch vụ ở đây được chia nhỏ đến mức tối giản
+  - Images:
+    + Images dùng để tạo các container
+    + Images là những khuôn mẫu chỉ đọc (read only templates)
+    + Images được tạo bởi docker command "build"
+    + Images được lưu trong Docker Registry, có thể bao gồm nhiều lớp hình ảnh.
+  - Containers:
+    + Nếu Image là 1 class -> Container là 1 thực thể của class đó.
+    + Container được tạo ra bởi Image
+    + Container là sự đóng góp những môi trường để khởi chạy
+    + Bên trong container cũng có những thư viện, những gói phụ thuộc(dependencies) để có thể khởi chạy ứng dụng.
+  - Registries và Repository:
+    + Registry là nơi chúng ta lưu trứ những Images
+    + Có thể lưu trữ trên host cá nhân hoặc dùng DockerHub
+    + Bên trong Registry, những images được đăng ks thông qua Repository(github)
+
+CICD 
+  - Viết tắt của Continuous Integration Continuous Delivery là một quy trình hỗ trợ cho việc phát triển phần mềm
+  - Vì thế cần phải có sự tích hợp liên tục có thể là vài lần trong 1 ngày khi lập trình viên trong dự án commit các công việc (source code) lên Source Control để đảm bảo khi có vấn đề xảy ra sẽ tốn ít thời gian nhất cho việc fix các lỗi đảm bảo cho việc Delivery diễn ra suôn sẻ. Hay nói cách khác CI là tự động hoá quy trình tích hợp các module lại với nhau đảm bảo source code hoạt động không có lỗi (kể cả lỗi compile hay lỗi về logic).
+  - Khái niệm CD là sự nối tiếp cho quá trình làm CI, sau khi Test tích hợp mọi thứ suôn sẻ trên môi trường development thì bước tiếp theo chính là Delivery cho khách hàng - hay deploy sản phẩm lên Server.
+  -->
+
+<!--  
+MÔ HÌNH MVC
+  - MVC là từ viết tắt của 'Model View Controller'. Nó đại diện cho các nhà phát triển kiến ​​trúc áp dụng khi xây dựng các ứng dụng. Dễ hiểu hơn, nó là mô hình phân bố source code thành 3 phần, mỗi thành phần có một nhiệm vụ riêng biệt và độc lập với các thành phần khác.
+  Mô hình MVC được chia làm 3 lớp xử lý gồm Model – View – Controller :
+    + Model : là nơi chứa những nghiệp vụ tương tác với dữ liệu hoặc hệ quản trị cơ sở dữ liệu (mysql, mssql… ); nó sẽ bao gồm các class/function xử lý nhiều nghiệp vụ như kết nối database, truy vấn dữ liệu, thêm – xóa – sửa dữ liệu…
+    + View : là nới chứa những giao diện như một nút bấm, khung nhập, menu, hình ảnh… nó đảm nhiệm nhiệm vụ hiển thị dữ liệu và giúp người dùng tương tác với hệ thống.
+    + Controller : là nới tiếp nhận những yêu cầu xử lý được gửi từ người dùng, nó sẽ gồm những class/ function xử lý nhiều nghiệp vụ logic giúp lấy đúng dữ liệu thông tin cần thiết nhờ các nghiệp vụ lớp Model cung cấp và hiển thị dữ liệu đó ra cho người dùng nhờ lớp View.
+  - Sự tương tác giữa các thành phần:
+    + Controller tương tác với qua lại với View
+    + Controller tương tác qua lại với Model
+    + Model và View không có sự tương tác với nhau mà nó tương tác với nhau thông qua Controller.
+  - Ưu điểm MVC:
+    + Trình tự xử lý rất rõ ràng
+    + Mô hình MVC quy hoạch các class/function vào các thành phần riêng biêt Controller - Model - View, việc đó làm cho quá trình phát triển - quản lý - vận hành bảo trì web diễn ra thuận lợi hơn, tạo ra được các chức năng chuyên biệt hoá đồng thời kiểm soát được luồng xử lý.
+    + Tạo mô hình chuẩn cho dự án, khi người có chuyên môn ngoài dự án tiếp cận với dự án dễ dàng hơn.
+    + Mô hình đơn giản, dễ hiểu, xử lý những nghiệp vụ đơn giản, và dễ dàng triển khai với các dự án nhỏ.
+  - Nhược điểm mô hình MVC:
+    Đối với các dự án có tính phức tạp cao thì mô hình MVC trở nên không khả dụng.
+
+-->
+
+<!-- WEB DEVELOPMENT 2020
+
+TOOL 1: 
+The Necessities - Basic system tools for web development
+- Computer & OS    : MacOS, Windows, Linux
+- Text Editor / IDE : VSCode, Sublime Text, Visual Studio, Eclipse
+- Web Browser: Chrome, Firefox
+- Terminal:  Bash, Zsh, Powershell, Bit Bash, iTerm, Hyper
+- Design(optional): Adobe XD, Photoshop, Sketch, Figma
+
+The Building Blockks - HTML/CSS are almost always the first thing you want to learing in web dev
+- HTML5(Semantic elements, attributes, docype, etc)
+- CSS Fundamentals(Colors, fonts, positioning, box model)
+- CSS grid & Flexbox
+- Css Custom Properties
+- Css Transitions
+
+Responsive Design - Every serious project that you create should look good and be completely usable on all devices
+- Viewport
+- Media Queries
+- Fluid Widths
+- rem uinits over px
+- Mobile First
+
+Custom Reusable CSS Components
+Create your own modular, reusable CSS components to use in your projects. Frameworks seem to be a bit less popular.
+Sass is a Css pre-processor that makes CSS more efficient and adds more functionality to standard CSS
+- Variables
+- Nesting
+- Conditionals
+
+CSS Frameworks(Choose One)
+A bit less popular than past years, but still very relevant. Great for prototyping and for developers that are not great with design
+- Bootstrap
+- Tailwind CSS
+- Materialize
+- Bulma
+
+TOOL 2:
+Some tools that you may be working with as a front-end developer
+- Git(Version Control) & Github
+- Browser Dev Tools
+- VSCode Extensions
+- Emmet
+- npm or yarn(Package Manager)
+- axios
+- webpack or parcel(JS Module Bundlers)
+
+Basic Deployment - you should know how to get your websites/apps on to a web server
+- Domain Registration(Namecheap, Google Domains, etc)
+- Managed Hosting(InMotion, Hostgator, Bluehost, etc)
+- Static Hosting(Netlify, Github Pages)
+- SSL Certificate
+- FTP, SFTP(File Transfer Protocol)
+- SSH(Secure Shell)
+- CLI & Git
+
+Where To Now?(Choose One) - you path may differ depending on what you want to do
+- Frontend JS Framework(React, Vue, Angular)
+- Server Side Language(NodeJs, Python, PHP, C#, Ruby, GoLang, Java, Rust)
+- Server-Side Framework
+ + Node,js - Express, Koa, Adonis, Feathers.js, Nest.js
+ + PHP - Laravel, Symfony, Slim
+ + Python - Django, Flask
+ + C# - ASP.NET MVC
+ + Java - Sping MVC, Grails
+ + Ruby - Ruby on Rails, Sinatra
+ + Go - Revel
+- Database:
+ + Relational DB: PostgreSQL, MySQL, MS SQL
+ + NoSQL: MongoDB, RethinkDB, CouchDB
+ + Cloud Database: Firebase, AWS, Azure Cloud DB
+ + Lightweight & Cache: Redis, NeDB, SQLlite
+ + Learning: SQL, ORM, ODM, etc
+
+GraphQL - is essentially a query for your API
+- Single endpoint to ask for only what you want
+- Simple syntax, similar to JSON
+- Fairly easy to implement
+- Apollo is a client to interact with the GraphQL server
+
+Content Management - A CMS is used to add content to your website/app. It is great for clients to be able to update their own content
+- Traditional CMS - Wordpress, Drupal, Keystone, Enduro
+- Headless CMS - Contentful, Prismic.io, Sanity, Strapi
+
+Deployment & DevOps - Understand how to create/manage environments and deploy to the web
+- SSH(Secure Shell)
+- Web Server Environment: NGINX, Apache
+- App Hoisting: Linode, Heroku, AWS, Azure, Now
+- Virtualization: Docker, Vagrant
+- Testing: Unit, Functional, Integration, etc
+- Load Balancing, Monitoring, Security, etc
+
+Full Stack Dev - you are now a fullstack rockstar that can create and deploy powerful, database driven web apps
+- Build UI using whatever front-end technologies you choose
+- Fluent in a server-side language and framework
+- Setup dev environments and workflows
+- Build backend apps, APIs, microservices
+- Work with database, SQL, ORMs
+- Deploy to production (SSH, Git, Cloud, etc)
+
+Mobile Development - we have some really cool technologies to build native mobile apps with web technologies
+- Flutter: SDK from Google to build native mobile apps. Uses Dart
+- React Native: build native mobile apps using the React framework
+- NativeScript: build native mobile apps with JS, TS, Angular or Vue
+- Ionic: build hybrid mobile app with JS
+- Xamarin: build native mobile app with C#
+
+PWAs: Progresstive Web Apps - are regular web apps (HTML/CSS/JS) but have a native feel as far as experience, layout and functionality
+- Look great on all screen sizes
+- Offline content with service workers
+- Installable
+- Splash Screen
+- Must be HTTPs
+- Reliable, fast and engaging
+
+Serverless Architecture - server operations without actually needing your own server
+-"Backend" or "Functions" as a service(Faas)
+- Reduce complexity and costs
+- Less infrastructure to manage
+- AWS Lambla & Netlify
+
+Svelte - JS compiler that produces pure vanilla JS code and allows you to build UI easily
+- Write Less code
+- No virtual DOM
+- Very fast
+
+State Management - for larger apps, 3rd party state managers may be needed, however, look forward to using them less
+- React - Redux, Context API with Hooks
+- Vue - Vuex
+- Anular - NGRX, Services
+- Apollo Client
+
+Server Side Rendering - Render React & Vue on the server as oppose to a client side SPA
+- Better SEO
+- File system routing
+- Automatic code splitting
+- Static exporting
+- CSS in JS
+
+Static Site Generators: Gatsby(React) and Gridsome(Vue) are examples of static site generators
+- Better SEO
+- File system routing
+- Data fetching from local files, during bulid time
+- Plugin system
+- GraphQI for data
+
+TypeScript, Vanilla script
+
+Font-End Wizard
+- Familiar with a popular fontend framework
+- Build advanced front-end apps/interfaces
+- Smooth front-end workflow
+- Interact with backend APIs and data
+- Manage app and component level state
+- Bonus: SSR/Static site genetation
+-->
+
+//DEMO - PLAN(md)
+
+<!-- # What you will learn?
+
+## Front-end(Design)
+
+1. JavaScript basic AJAX / DOM
+2. JavaScript advanced: MVC / MVVM model, ES6, DESIGN PATTERN, asynchronous(callback, promise, async/await), JS Unit TEST( Jasmine, jest), performance, reponsive design.
+NPM & TOOL: minify & bundling, webpack, linter
+3. CSS
+4. HTML
+5. CSS frameworks: Bootstrap4, Material. Others
+   ->> Some front-end projects to practice
+6. NodeJS
+7. Front-end frameworks: ReactJS(F), ReactNative(F), Angular(G), VueJS(Evan You)
+   ->> Some UI projects
+8. Cut PSD into HTML / CSS
+
+## Back-end(API + database)
+
+8. DEVOPS: Docker, CI, CD
+9. CLOUD: AZURE, AWS
+10. Back-end frameworks: ExpressJS(Node.js), Laravel(PHP), Spring(Java)
+11. Source control: Git/TFS/SVN, Trello, Asana
+12. Ajax / Web API / Rest API
+13. HTTP Method / Networking
+14. Server configuration & Deploy: TOMCAT, NGINX, ISS, APACHE
+15. Database query & design: SQL database
+16. Caching + NoSQL database: redis, mongoDB, database design & optimize
+17. Algothirm: BIGO, STACK, QUEUE, HAST TABLE, TREE (GRAPH)
+18. CMS(Wordpress, joomla,...) for PHP
+19. Deployment
+    ->> Then you will work on some projects
+20. Interview skills
+21. How to work in a team efficiently
+22. Others: ReactNative, AWS, PhoneGap, Electron, Sketch, Ruby, Apache, Nginx, Wordpress, Docker, Heroku, 
+
+## Databases & Web Storage
+1. Hiểu được các lợi ích của dữ liệu quan hệ, ví dụ: MySQL.
+2. Tìm hiểu về cơ sở dữ liệu NoSQL, ví dụ: MongoDB.
+3. Hiểu được điều gì là tốt hơn trong những tình huống nhất định.
+4. Biết cách kết nối cơ sở dữ liệu với ngôn ngữ back-end mà bạn đã chọn (ví dụ: Node.js + MongoDB).
+5. Hiểu được lợi ích của các kho dữ liệu trong bộ nhớ như Redis hoặc memcached.
+6. Bộ lưu trữ web để lưu trữ sessions, cookie và cached data trong trình duyệt.
+7. Cơ sở dữ liệu nhân rộng, ACID, và ORM (tất cả tùy chọn).
+
+- Ubuntu (windows sucks)
+
+## HTTP & REST
+HTTP là một giao thức ứng dụng phi văn bản trên Internet – nó cho phép client giao tiếp với servers  (ví dụ: mã JavaScript của bạn có thể yêu cầu AJAX cho một số mã back-end bạn đã chạy trên một máy chủ sẽ xảy ra thông qua HTTP). Một số topic quan trọng bạn nên tìm hiểu được liệt kê dưới đây:
+1. REST là gì và tại sao lại quan trọng trong giao thức HTTP và các ứng dụng web.
+2. Best practices để thiết kế RESTful API. POST / GET yêu cầu.
+3. Học cách sử dụng Chrome DevTools có thể cực kỳ hữu ích.
+4. Giấy chứng nhận SSL là gì?
+5. HTTP / 2 & SPDY (tùy chọn). WebSockets, Web Workers, và Service Workers (tất cả các tùy chọn).
+
+## Cấu trúc ứng dụng web
+
+Một khi bạn nghĩ rằng bạn mình đã nắm bắt về HTML / CSS, JavaScript, lập trình back-end, cơ sở dữ liệu, và HTTP / REST, tiếp theo sẽ là phần khó khăn hơn. Tại thời điểm này nếu bạn muốn tạo ra một ứng dụng web phức tạp, bạn cần phải biết cách cấu trúc code của bạn, cách tách các tệp tin, vị trí lưu trữ các tệp tin lớn, cách sắp xếp dữ liệu trong cơ sở dữ liệu của bạn, nơi thực hiện một số nhiệm vụ tính toán (client-side vs server-side) và nhiều thứ khác nữa.
+
+Có những best practices  mà bạn có thể đọc online, nhưng cách tốt nhất để thực sự học về cấu trúc ứng dụng là tự làm một ứng dụng lớn có chứa một số bộ phận chuyển động – hoặc thậm chí tốt hơn là làm việc với một nhóm và cùng phát triển 1 ứng dụng lớn/ phức tạp.
+
+Đó là lý do tại sao người có 7 năm kinh nghiệm thể làm tốt hơn người có 2 năm kinh nghiệm, dù họ không nhất thiết phải biết CSS hoặc JavaScript nhưng qua quá trình làm việc tích lũy kinh nghiệm họ có thể làm việc với tất cả các loại ứng dụng và trang web khác nhau và đã học được cách để thiết kế và xây dựng cấu trúc ứng dụng (trong khi học những thứ quan trọng khác) có thể mang lại hiệu quả tốt nhất và hình dung về bức tranh toàn cảnh nhất khi phát triển ứng dụng. Dưới đây là một số điều bạn có thể đọc để giúp bạn tìm hiểu cách kiến ​​trúc các ứng dụng web của bạn hiệu quả:
+
+1. Tìm hiểu về các platforms thông dụng như một dịch vụ, ví dụ: Heroku và AWS. Heroku cho phép bạn dễ dàng upload code của mình lên và chạy ứng dụng với cấu hình thấp hoặc bảo trì máy chủ và AWS cung cấp hàng chục sản phẩm và dịch vụ lưu trữ, xử lý video, cân bằng tải và nhiều hơn thế nữa.
+2. Tối ưu hóa cho các ứng dụng và trình duyệt hiện đại.
+3. Một số ý kiến ​​về cấu trúc ứng dụng web cần có bao gồm.
+4. Thiết kế các ứng dụng web của Microsoft.
+5. MVC.
+6. Mặc dù điều quan trọng nhất là bạn nên cố gắng làm  project với mọi người, hãy xem xét codebases của các dự án phổ biến trên GitHub và tìm hiểu càng nhiều càng tốt từ các senior developers.
+7. Tìm hiểu tại sao bộ nhớ đệm lại quan trọng như vậy khi làm việc với một lượng lớn dữ liệu. Cũng tìm hiểu những ưu nhược điểm của bộ nhớ trong vs bộ nhớ ngoài -->
+
+
+
+
+
+
