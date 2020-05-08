@@ -61,7 +61,7 @@ file: .gitignore: node_modules
         local repository                                                   local repository        
 
 Lúc đầu tạo repository trên GITHUB
-  git remote add origin http://
+  git remote add origin https://github.com/huuhung123/demoExpress.git
   git remote -v, biết được repository hiện tại của mình trên github
   git push -u origin master // lần sau chỉ cần git push (origin/master)
 
@@ -69,6 +69,10 @@ Lúc đầu tạo repository trên GITHUB
   git push
   git clone http // -> folder có mọi thứ như người up(git log, ...)
   git pull // cập nhật lại giá trị, thay đổi khi push lên github
+
+  git remote add origin   git remote remove origin
+  git remote set-url origin [newURL]
+
 -->
 
 <!-- 
@@ -658,6 +662,172 @@ Có những best practices  mà bạn có thể đọc online, nhưng cách tố
 5. MVC.
 6. Mặc dù điều quan trọng nhất là bạn nên cố gắng làm  project với mọi người, hãy xem xét codebases của các dự án phổ biến trên GitHub và tìm hiểu càng nhiều càng tốt từ các senior developers.
 7. Tìm hiểu tại sao bộ nhớ đệm lại quan trọng như vậy khi làm việc với một lượng lớn dữ liệu. Cũng tìm hiểu những ưu nhược điểm của bộ nhớ trong vs bộ nhớ ngoài -->
+
+<!-- 
+NPM
+- "devDependencies": {"gulp": "^3.9.1"}
+- npm install lodash --save(It's going to install the regular dependencies) <==> npm install --production
+- npm unistall(remove/rm) gulp-sass gulp --save-dev <==> npm unistall(remove/rm) ulp-sass gulp --save
+- dev: for development, you are not going to need it in production and.
+- npm install lodash@4.17.3 --save, npm update lodash
+- Semantic Versioning - 8.2.6 
+ + 8: major version - major changes, breaks the API
+ + 2: minor version - new features, does not break API
+ + 6: patch - bug fixes
+ ^: default is to just keep the minor version to update
+- npm install live-server -g
+- npm install -g nodemon -> npm root -g(show you where your global modules ) -> npm remove -g nodemon (npm install -D nodemon)
+- npm list --depth 0(gulp@3.9.1, lodash@4.17.4)/1/2
+- "script": {                           "devDependencies": {
+  "start": "node app.js",                  "live-server": "^1.2.0"
+  "server": "live-server"                   }
+}
+npm (run) start -> node app.js, np run server -> live-server
+-->
+
+<!-- 
+Google Chrome Developer Tools
+-$('h1').style.color = 'blue'; $0/$1$2
+-source: thêm file, thay đổi như trên web và VScode(live-server)
+-->
+
+<!-- 
+XMLHtppRequest
+-->
+
+<!-- 
+NPM - node package manager
+- Install 3rd party pakages(frameworks, libraries, tools, etc)
+- packages get stored in the "node_modules" folder
+- All dependencies are listed in a "package.json" file
+- NPM scripts can be created to run certain tasks such as run a server
+npm init                generates a package.json file
+npm install express     install locally
+npm install -g nodemon  install globally
+-->
+
+<!-- 
+NODE MODULES:
+- Node core modules(path, fs, http, etc)
+- 3rd party modules/packages installed via npm
+- custom modules(files)
+const path = require('path'), const myFile = require('./myFile')
+-->
+
+<!-- 
+DEPLOY TO HEROKU
+- Sửa biến port sử dụng process.env.PORT - it's only for development, not using it in production
+- Kiểm tra lại package.json
+- Không lưu uploaded files trên heroku(cloudinary)
+- Thay thế code sử dụng lowdb, dùng MongoDB
+- Heroku chỉ lưu source code
+-->
+
+<!-- 
+PACKAGE.json FILE
+- Manifest file with app info
+- List dependencies(name & version)
+- Specify if versions should be updated
+- Create NPM scripts
+- Easily create with "npm init"
+- npm init --yes -> "author": "", "license": "ISC" 
+-> nom config set init-author-name(init-license) "Brad Traversy" ("MIT")
+-> npm config delete init-author-name(init-license)
+-->
+
+<!-- 
+JSON(JS Object Notation)
+- Lightweight data-interchange format
+- Based on a subset of JS
+- Easy to read and write
+- Often used with AJAX(is used for it's used to send data and forth from client and server without having to refesh the page in a broswer)
+-->
+<!-- 
+XMLHTTPRequest/live server
+ALl modern browsers have a build-in XMLHtppRequest object to request data from a server
+-->
+
+<!-- 
+API(Application Prgram Interface)
+- APIs are everywhere
+- Contract provided by one piece of software to another
+- Structured request and response
+- API is basically a messenger or a waiter between running software all
+REST
+- Representational State Transfer
+- Architecture style for designing networked applications
+- Relies on a stateless, client-server protocol, almost always HTTP
+- Treats server objects as resources that can be created or destroyed
+- Endpoints: the URL where api/service can be accessed by a client app
+- Test postman -> API rate limit so github.com/setting/appications/register authori -> give a client id and client secret -> OtUTH2 Key/Secret
+-->
+
+<!-- 
+HTTP(Hyper Text Transfer Protocol)
+- Communication between web servers & clients
+- HTTP req/res
+- Loading pages, form submit, Ajax calls
+HTTP IS STATELESS
++ Every request os completley independant
++ Similar to transactions
++ Programming, local storage, cookies, session are used to create anhanced user experiences
+HTTPS:
++ HTTP Secure
++ Data sent is encrypted
++ SSL/TLS
++ Install certificate on web host
+-HTTP HEADER FIELDS:
++ General: request URL, request method, status code, remote address(IP of the remote computer), referrer policy
++ Response: server, set-cookie, content-type, content-length, date
++ Request: cookies, accept-xxx, content-type, content-length, authorization, user-agent, referrer
+-->
+
+<!-- 
+HTTP STATUS CODES
+1xx: Informational - request recieved/processing
+2xx: Cuccess - successfully, understood and accepted
+3xx: Redirect - further action must be taken/redirect
+4xx: Client error - request does not have what it needs
+5xx: Server error - server failed to fulfil an apparent valid request
+300 - moved to new URl, 304 - not modified(Cached version)
+401 - unauthorized - if you are missing a token
+500 - internal server error
+HTTP/2:
+- Major revision of HTTP
+- Under the hood changes
+- Respond with more data
+- Reduce latency by enabling full request and response multiplexing
+- Fast, efficient & secure
+-->
+
+<!-- 
+Cross-platform development: 1 ngôn ngữ duy nhất, build ra nhiều nền tảng. EX: xamarin(C#), Phonegap(HTML, CSS, JS), Kotlin, Flutter vs Dart, ReactNative
+
+10 Things all web developers should learn
+1. Fundamentals: HTML/CSS/JS
+2. Git & Github
+3. Chrome DevTools
+4. Consuming DevTools
+5. Building a REST API & CRUD
+6. AUTHENTICATION
+7. MVC(Model View Controller)
+8. Problem Solving & Searching
+9. Writing Tests
+10. Devops & Deployment
+-->
+
+<!-- 
+npm install -g firebase-tools
+firebase login
+firebase init -> hosting -> single page: no
+firebase serve (test)
+firebase deploy -> Done
+Ajax
+-->
+
+<!-- Axios, Fetch Crash Course, http crash course & exploration, serve-favicon morgan express handlebars cookie parser, Validator and Express-Session (Validation & Sessions), monk, mongoose, pug, aws, webpack-->
+
+
 
 
 
